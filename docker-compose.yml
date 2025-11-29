@@ -1,0 +1,71 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:6
+    container_name: sunmap-mongodb
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo-data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: sunmap-rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+  backend:
+    build: ./backend
+    container_name: sunmap-backend
+    ports:
+      - '3001:3001'
+    environment:
+      MONGO_URI: mongodb://root:example@mongodb:27017/sunmap?authSource=admin
+      JWT_SECRET: supersecret
+      DEFAULT_ADMIN_EMAIL: admin@sunmap.com
+      DEFAULT_ADMIN_PASSWORD: 123456
+    depends_on:
+      - mongodb
+      - rabbitmq
+
+  frontend:
+    build: ./frontend
+    container_name: sunmap-frontend
+    ports:
+      - '5173:5173'
+    depends_on:
+      - backend
+
+  worker-go:
+    build: ./worker-go
+    container_name: sunmap-worker-go
+    environment:
+      API_URL: http://backend:3001/api/weather/logs
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - backend
+      - rabbitmq
+
+  producer-py:
+    build: ./producer-py
+    container_name: sunmap-producer-py
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      WEATHER_API_URL: https://api.open-meteo.com/v1/forecast
+      LOCATION_LAT: -23.5
+      LOCATION_LON: -46.6
+    depends_on:
+      - rabbitmq
+
+volumes:
+  mongo-data:
+  rabbitmq-data:
