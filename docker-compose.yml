@@ -38,7 +38,7 @@ services:
       - rabbitmq
 
   frontend:
-    build: ./frontend
+    build: .
     container_name: sunmap-frontend
     ports:
       - '5173:5173'
