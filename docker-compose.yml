@@ -24,7 +24,9 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: DockerFile
     container_name: sunmap-backend
     ports:
       - '3001:3001'
