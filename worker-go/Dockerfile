@@ -10,6 +10,9 @@ RUN go mod download
 
 COPY . .
 
+# Ensure module checksums are populated in case go.sum was not committed
+RUN go mod tidy
+
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags='-s -w' -o /worker ./
 
 FROM alpine:3.18
