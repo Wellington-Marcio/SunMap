@@ -1,0 +1,76 @@
+{
+  "vhost": "/",
+  "exchanges": [
+    {
+      "name": "weather.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "weather.retry.exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "dlx.weather",
+      "vhost": "/",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "queues": [
+    {
+      "name": "weather",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "weather.retry.exchange"
+      }
+    },
+    {
+      "name": "weather.retry",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 60000,
+        "x-dead-letter-exchange": "weather.exchange"
+      }
+    },
+    {
+      "name": "weather.dlq",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    { "source": "weather.exchange", "vhost": "/", "destination": "weather", "destination_type": "queue", "routing_key": "weather" },
+    { "source": "weather.retry.exchange", "vhost": "/", "destination": "weather.retry", "destination_type": "queue", "routing_key": "weather.retry" },
+    { "source": "dlx.weather", "vhost": "/", "destination": "weather.dlq", "destination_type": "queue", "routing_key": "" }
+  ],
+  "policies": [
+    {
+      "vhost": "/",
+      "name": "weather-dlx-policy",
+      "pattern": "^weather$",
+      "definition": {
+        "dead-letter-exchange": "dlx.weather"
+      },
+      "priority": 0
+    }
+  ]
+}
