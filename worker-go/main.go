@@ -46,11 +46,11 @@ func main() {
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer
-		false,  // auto-ack
-		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
-		nil,    // args
+		false,   // auto-ack
+		false,   // exclusive
+		false,   // no-local
+		false,   // no-wait
+		nil,     // args
 	)
 	failOnError(err, "Failed to register a consumer")
 
@@ -59,71 +59,8 @@ func main() {
 	go func() {
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
-			// Inspect x-death headers to determine prior attempts (sum of counts)
-			attempts := 0
-			if hdr, ok := d.Headers["x-death"]; ok {
-				if arr, ok2 := hdr.([]interface{}); ok2 {
-					for _, item := range arr {
-						// AMQP x-death items can be amqp.Table (map[string]interface{})
-						switch t := item.(type) {
-						case amqp.Table:
-							if c, ok := t["count"]; ok {
-								switch v := c.(type) {
-								case int:
-									attempts += v
-								case int32:
-									attempts += int(v)
-								case int64:
-									attempts += int(v)
-								case float64:
-									attempts += int(v)
-								}
-							}
-						case map[string]interface{}:
-							if c, ok := t["count"]; ok {
-								switch v := c.(type) {
-								case int:
-									attempts += v
-								case float64:
-									attempts += int(v)
-								}
-							}
-						}
-					}
-				}
-			}
-
-			// If attempts exceed threshold, publish directly to DLX and ack
-			if attempts >= 4 {
-				log.Printf("Message has reached %d attempts; routing to DLQ", attempts)
-				// publish to DLX exchange
-				err := ch.Publish("dlx.weather", "", false, false, amqp.Publishing{
-					ContentType:  "application/json",
-					DeliveryMode: amqp.Persistent,
-					Body:         d.Body,
-				})
-				if err != nil {
-					log.Printf("Failed to publish to DLX: %v", err)
-					// attempt to nack for retry as last resort
-					d.Nack(false, true)
-					continue
-				}
-				d.Ack(false)
-				continue
-			}
-
-			// Forward to backend (include x-api-key if provided)
-			req, err := http.NewRequest("POST", backendURL, bytes.NewReader(d.Body))
-			if err != nil {
-				log.Printf("Failed to create request: %v", err)
-				d.Nack(false, true)
-				continue
-			}
-			req.Header.Set("Content-Type", "application/json")
-			if key := os.Getenv("BACKEND_API_KEY"); key != "" {
-				req.Header.Set("x-api-key", key)
-			}
-			resp, err := http.DefaultClient.Do(req)
+			// Forward to backend
+			resp, err := http.Post(backendURL, "application/json", bytes.NewReader(d.Body))
 			if err != nil {
 				log.Printf("Failed to POST to backend: %v", err)
 				d.Nack(false, true)

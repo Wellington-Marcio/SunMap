@@ -21,31 +21,6 @@ async function run() {
       if (!msg) return;
       const body = msg.content.toString();
       console.log('Received message:', body);
-      // inspect x-death header to count previous delivery attempts
-      let attempts = 0;
-      try {
-        const hdr = msg.properties && msg.properties.headers && msg.properties.headers['x-death'];
-        if (Array.isArray(hdr)) {
-          attempts = hdr.reduce((acc, it) => acc + (it && it.count ? Number(it.count) : 0), 0);
-        }
-      } catch (e) {
-        // ignore header parsing errors
-      }
-      if (attempts >= 4) {
-        console.warn(`Message reached ${attempts} attempts - routing to DLQ`);
-        try {
-          // publish directly to DLX exchange
-          ch.publish('dlx.weather', '', Buffer.from(body), { persistent: true });
-          ch.ack(msg);
-          console.log('Published to dlx.weather and acked original message');
-          return;
-        } catch (pubErr) {
-          console.error('Failed to publish to DLX:', pubErr);
-          // as last resort, nack for retry
-          ch.nack(msg, false, true);
-          return;
-        }
-      }
       try {
         const res = await fetch(BACKEND_URL, {
           method: 'POST',
