@@ -1,0 +1,1 @@
+{"version":3,"file":"rabbit.module.d.ts","sourceRoot":"","sources":["../../src/rabbitmq/rabbit.module.ts"],"names":[],"mappings":"AAAA,OAAO,EAAkB,eAAe,EAAE,YAAY,EAAE,MAAM,gBAAgB,CAAC;AAC/E,OAAO,KAAK,IAAI,MAAM,SAAS,CAAC;AAEhC,qBAAa,aAAc,YAAW,YAAY,EAAE,eAAe;IACjE,OAAO,CAAC,IAAI,CAAgC;IAEtC,YAAY;IAalB,aAAa,IAAI,IAAI,CAAC,UAAU,GAAG,IAAI;IAIjC,eAAe;CAStB;AAGD,qBAKa,YAAY;CAAG"}
