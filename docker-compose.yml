@@ -7,7 +7,7 @@ services:
       - '27017:27017'
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_PASSWORD: 123456
     volumes:
       - mongo-data:/data/db
 
@@ -26,15 +26,23 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: DockerFile
+      dockerfile: Dockerfile
     container_name: sunmap-backend
+    # Map container port 3001 to host port 3002 to avoid conflicts with any
+    # process already listening on host:3001. If you prefer host:3001, change
+    # the left side to 3001 and ensure no local process is using that port.
     ports:
-      - '3001:3001'
+      - '3002:3001'
     environment:
-      MONGO_URI: mongodb://root:example@mongodb:27017/sunmap?authSource=admin
+      MONGO_URI: mongodb://root:123456@mongodb:27017/sunmap?authSource=admin
       JWT_SECRET: supersecret
       DEFAULT_ADMIN_EMAIL: admin@sunmap.com
       DEFAULT_ADMIN_PASSWORD: 123456
+      BACKEND_API_KEY: supersecret_api_key
+      # OpenWeather API key used by backend `/weather/fetch` endpoint.
+      # Configure via a root `.env` file or your environment. Do NOT commit secrets.
+      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
+      PORT_FALLBACK: 'true'
     depends_on:
       - mongodb
       - rabbitmq

@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "clear-old-weather": "node scripts/clear_old_weather.js"
+  },
   "devDependencies": {
     "autoprefixer": "^10.4.22",
     "postcss": "^8.5.6",
