@@ -1,0 +1,11 @@
+# Local test artifacts
+export.csv
+login.json
+login_response.json
+
+# Node modules (if not present already)
+node_modules/
+
+# Dist builds
+backend/dist/
+frontend/dist/
