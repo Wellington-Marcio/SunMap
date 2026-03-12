@@ -53,6 +53,18 @@ services:
       retries: 3
       start_period: 10s
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sunmap-frontend
+    # The frontend Dockerfile builds static assets and serves via nginx on port 80
+    ports:
+      - '5173:80'
+    restart: unless-stopped
+    depends_on:
+      - backend
+
   worker-node:
     build: ./worker-node
     container_name: sunmap-worker-node
