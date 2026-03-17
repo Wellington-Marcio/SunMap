@@ -9,3 +9,4 @@ node_modules/
 # Dist builds
 backend/dist/
 frontend/dist/
+/.env
