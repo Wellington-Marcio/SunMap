@@ -34,7 +34,9 @@ export const authApi = {
 };
 
 export const usersApi = {
-  list: (page = 1, limit = 10) => apiAuth.get(`/users?page=${page}&limit=${limit}`, { headers: authHeader() }),
+  // list: (page = 1, limit = 10) => api.get(`/users?page=${page}&limit=${limit}`, { headers: authHeader() }),
+
+  list: () => api.get(`/users`), //Com a Rota Weather nao retorna 404  
   create: (email: string, password: string) => apiAuth.post('/users', { email, password }),
 };
 
