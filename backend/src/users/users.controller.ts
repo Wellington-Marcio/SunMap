@@ -1,5 +1,5 @@
 import { Controller, Get, Query, Post, Body, BadRequestException, Res } from '@nestjs/common';
-import { UserService } from './users.service';
+import { UsersService } from './users.service';
 import axios from 'axios';
 import ExcelJS from 'exceljs';
 import * as fs from 'fs';
@@ -8,7 +8,7 @@ import * as os from 'os';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UserService) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Get()
   async getAll() {
@@ -73,37 +73,10 @@ export class UsersController {
   }
 
   // Use OpenUsersMap to fetch a single record by lat/lon and persist it.
-  @Get('fetch')
-  async fetch(@Query('lat') lat?: string, @Query('lon') lon?: string) {
-    try {
-      const key = process.env.OPENWEATHER_API_KEY || process.env.OWM_API_KEY || null;
-      if (!key) {
-        return { ok: false, message: 'OPENWEATHER_API_KEY not configured on backend' };
-      }
-      const qlat = (lat || '').toString();
-      const qlon = (lon || '').toString();
-      const url = `https://api.openusersmap.org/data/2.5/users?lat=${encodeURIComponent(qlat)}&lon=${encodeURIComponent(qlon)}&appid=${encodeURIComponent(key)}&units=metric&lang=pt`;
-      const resp = await axios.get(url, { timeout: 8000 });
-      const d = resp && resp.data ? resp.data : null;
-      if (!d) return { ok: false, message: 'no data from OpenUsersMap' };
-      const payload: any = {
-        location: d.name || `${qlat},${qlon}`,
-        locationName: d.name || null,
-        lat: qlat || undefined,
-        lon: qlon || undefined,
-        temperature: d.main?.temp ?? null,
-        humidity: d.main?.humidity ?? null,
-        wind_kph: d.wind && typeof d.wind.speed === 'number' ? Number((d.wind.speed * 3.6).toFixed(2)) : null,
-        condition: Array.isArray(d.users) && d.users[0] ? d.users[0].description : null,
-        raw: d,
-        timestamp: d.dt ? d.dt : undefined,
-      };
-      const saved = await this.usersService.create(payload);
-      return { ok: true, data: saved };
-    } catch (e: any) {
-      return { ok: false, message: 'fetch failed', error: e?.message ?? String(e) };
-    }
-  }
+  // @Get('fetch')
+  // async fetch(@Query('lat') lat?: string, @Query('lon') lon?: string) {
+  
+  // }
 
   @Get('export')
   async exportCsv(@Res() res: any, @Query('from') from?: string, @Query('to') to?: string) {

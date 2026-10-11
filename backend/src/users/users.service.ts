@@ -13,6 +13,7 @@ export class UsersService implements OnModuleInit, OnModuleDestroy {
       this.client = new MongoClient(uri);
       await this.client.connect();
       this.db = this.client.db();
+      debugger
       this.col = this.db.collection('users');
       // ensure an index on createdAt for queries/exports
       await this.col.createIndex({ createdAt: 1 });

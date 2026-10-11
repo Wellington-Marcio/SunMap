@@ -14,6 +14,7 @@ export class WeatherService implements OnModuleInit, OnModuleDestroy {
       await this.client.connect();
       this.db = this.client.db();
       this.col = this.db.collection('weather');
+      debugger
       // ensure an index on createdAt for queries/exports
       await this.col.createIndex({ createdAt: 1 });
       // optional: ensure index on location
