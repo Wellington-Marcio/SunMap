@@ -1,12 +1,26 @@
-# Local test artifacts
-export.csv
-login.json
-login_response.json
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Node modules (if not present already)
-node_modules/
+/node_modules
+node_modules
+dist
+/dist
+dist-ssr
+*.local
 
-# Dist builds
-backend/dist/
-frontend/dist/
-/.env
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

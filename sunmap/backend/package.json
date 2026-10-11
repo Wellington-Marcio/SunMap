@@ -1,0 +1,25 @@
+{
+  "name": "sunmap-backend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node dist/main.js",
+    "start:dev": "nest start --watch",
+    "build": "tsc -p tsconfig.build.json",
+    "clear-old-weather": "node scripts/clear_old_weather.js"
+  },
+  "dependencies": {
+    "@nestjs/common": "^9.0.0",
+    "@nestjs/core": "^9.0.0",
+    "axios": "^1.0.0",
+    "exceljs": "^4.3.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongodb": "^5.7.0"
+  }
+  ,
+  "devDependencies": {
+    "typescript": "^4.9.5",
+    "@types/node": "^18.0.0",
+    "@types/jsonwebtoken": "^9.0.0"
+  }
+}
