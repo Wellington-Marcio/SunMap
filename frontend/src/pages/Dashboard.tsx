@@ -19,7 +19,7 @@ export default function Dashboard() {
     }
   }, []);
   const [weather, setWeather] = useState<WeatherRecord[]>([]);
-  const [, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [currentUserName, setCurrentUserName] = useState<string>('Usuários');
   const [loadingWeather, setLoadingWeather] = useState<boolean>(true);
   const [fromDate, setFromDate] = useState<string>('');
